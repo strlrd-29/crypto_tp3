@@ -14,7 +14,7 @@ import javax.crypto.SecretKey;
 
 public class App {
 
-    public static SecretKey generaKey(int n) throws NoSuchAlgorithmException {
+    public static SecretKey generateKey(int n) throws NoSuchAlgorithmException {
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
         keyGenerator.init(n);
         SecretKey key = keyGenerator.generateKey();
@@ -29,11 +29,7 @@ public class App {
     public static String encrypt(String algorithm, String input, SecretKey key)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException,
             BadPaddingException, IllegalBlockSizeException {
-        try (FileOutputStream fos = new FileOutputStream("message.txt")) {
-            fos.write(input.getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
         Cipher cipher = Cipher.getInstance(algorithm);
         cipher.init(Cipher.ENCRYPT_MODE, key);
         byte[] cipherText = cipher.doFinal(input.getBytes());
@@ -64,8 +60,14 @@ public class App {
     }
 
     public static void main(String[] args) throws Exception {
-        SecretKey key = generaKey(128);
-        String cypherText = encrypt("AES", "Hello World!!", key);
+        SecretKey key = generateKey(128);
+        String message = "Hello World";
+        try (FileOutputStream fos = new FileOutputStream("message.txt")) {
+            fos.write(message.getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String cypherText = encrypt("AES", message, key);
         System.out.println(cypherText);
         String plainText = decrypt("AES", "message_encrypted.txt", key);
         System.out.println(plainText);
